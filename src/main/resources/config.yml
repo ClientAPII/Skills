@@ -1,0 +1,5 @@
+host: localhost
+username: username
+password: password
+usePassword: true
+databasename: SkillsPlugin
