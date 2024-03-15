@@ -5,7 +5,7 @@ author: ClientAPI
 description: A plugin to manage player skills and levels.
 commands:
   skills:
-    description: Displays the player's skill levels.
+    description: Opens the Skills GUI.
   skillset:
     description: Setzt den Skill-Level eines Spielers.
     usage: /skillset <Spieler> <Skill> <Level>

@@ -1,18 +1,20 @@
 package de.clientapi.skills.commands;
 
 import de.clientapi.skills.DatabaseManager;
+import de.clientapi.skills.inventories.SkillsGUI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.awt.*;
 import java.sql.SQLException;
 
 public class SkillsCommand implements CommandExecutor {
-    private final DatabaseManager dbManager;
+    private final SkillsGUI skillsGUI;
 
     public SkillsCommand(DatabaseManager dbManager) {
-        this.dbManager = dbManager;
+        this.skillsGUI = new SkillsGUI(dbManager);
     }
 
     @Override
@@ -24,12 +26,9 @@ public class SkillsCommand implements CommandExecutor {
 
         Player player = (Player) sender;
         try {
-            int bowLevel = dbManager.getLevel(player.getUniqueId().toString(), "bow");
-            int swordLevel = dbManager.getLevel(player.getUniqueId().toString(), "sword");
-            player.sendMessage("Your bow skill level is: " + bowLevel);
-            player.sendMessage("Your sword skill level is: " + swordLevel);
+            skillsGUI.openGUI(player);
         } catch (SQLException e) {
-            player.sendMessage("An error occurred while retrieving your skill levels.");
+            player.sendMessage("An error occurred while opening the skills GUI.");
             e.printStackTrace();
         }
 
