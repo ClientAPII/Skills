@@ -2,6 +2,9 @@ package de.clientapi.skills.listener;
 
 import de.clientapi.skills.DatabaseManager;
 import de.clientapi.skills.Main;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -58,6 +61,22 @@ public class BowSkillsListener implements Listener {
 
         if (random.nextDouble() < noShootChance) {
             event.setCancelled(true);
+
+            // Reduce the player's health by half a heart
+            player.setHealth(Math.max(0, player.getHealth() - 1));
+
+            // Generate a random number to determine which message to display
+            double rand = random.nextDouble();
+
+            // Send a red message to the player's action bar
+            if (rand < 0.4) {
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "Du hast deine Hand an der Sehne verletzt"));
+            } else if (rand < 0.8) {
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "Du dir deine Finger verletzt"));
+            } else {
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "Du hast dir den Pfeil in den Fuß geschossen"));
+            }
+
             return;
         }
 

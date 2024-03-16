@@ -2,6 +2,7 @@ package de.clientapi.skills.commands;
 
 import de.clientapi.skills.DatabaseManager;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -27,6 +28,11 @@ public class SkillSetCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        if (!sender.hasPermission("skills.admin.set")) {
+            sender.sendMessage("Dazu hast du keine Rechte");
+            return true;
+        }
+
         if (args.length != 3) {
             sender.sendMessage("Falsche Anzahl von Argumenten. Verwendung: /skillset <name> <skill> <level>");
             return true;
@@ -34,6 +40,11 @@ public class SkillSetCommand implements CommandExecutor, TabCompleter {
 
         String playerName = args[0];
         String skill = args[1];
+        if (!skill.equals("bow") && !skill.equals("sword")) {
+            sender.sendMessage("Skill kann nur bow oder sword sein.");
+            return true;
+        }
+
         int level;
         try {
             level = Integer.parseInt(args[2]);
@@ -42,7 +53,13 @@ public class SkillSetCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        Player targetPlayer = Bukkit.getServer().getPlayer(playerName);
+        if (level < 1 || level > 5) {
+            sender.sendMessage("Skill muss zwischen 1 und 5 sein.");
+            return true;
+        }
+
+        // Replace the line that retrieves the Player object with the following line
+        OfflinePlayer targetPlayer = Bukkit.getOfflinePlayer(playerName);
         if (targetPlayer == null) {
             sender.sendMessage("Spieler nicht gefunden.");
             return true;
@@ -58,13 +75,22 @@ public class SkillSetCommand implements CommandExecutor, TabCompleter {
             e.printStackTrace();
         }
 
-        return true;
+        return false;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+            if (!player.hasPermission("skills.admin.set")) {
+                return null;
+            }
+        }
+
         if (args.length == 2) {
             return Arrays.asList("bow", "sword");
+        } else if (args.length == 3) {
+            return Arrays.asList("1", "2", "3", "4", "5");
         }
 
         return null;

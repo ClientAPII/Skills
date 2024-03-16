@@ -28,7 +28,7 @@ public class SkillsCommand implements CommandExecutor {
         Player viewer = (Player) sender;
         OfflinePlayer target;
 
-        if (viewer.hasPermission("skills.admin") && args.length > 0) {
+        if (viewer.hasPermission("skills.admin.view") && args.length > 0) {
             target = Bukkit.getOfflinePlayer(args[0]);
         } else {
             target = viewer;

@@ -8,4 +8,3 @@ commands:
     description: Opens the Skills GUI.
   skillset:
     description: Setzt den Skill-Level eines Spielers.
-    usage: /skillset <Spieler> <Skill> <Level>
