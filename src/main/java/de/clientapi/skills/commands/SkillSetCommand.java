@@ -1,6 +1,7 @@
 package de.clientapi.skills.commands;
 
 import de.clientapi.skills.DatabaseManager;
+import de.clientapi.skills.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -24,24 +25,24 @@ public class SkillSetCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Dieser Befehl kann nur von einem Spieler verwendet werden.");
+            Main.sendMessageWithPrefix(sender, "Dieser Befehl kann nur von einem Spieler verwendet werden.");
             return true;
         }
 
         if (!sender.hasPermission("skills.admin.set")) {
-            sender.sendMessage("Dazu hast du keine Rechte");
+            Main.sendMessageWithPrefix(sender, "Dazu hast du keine Rechte");
             return true;
         }
 
         if (args.length != 3) {
-            sender.sendMessage("Falsche Anzahl von Argumenten. Verwendung: /skillset <name> <skill> <level>");
+            Main.sendMessageWithPrefix(sender, "Falsche Anzahl von Argumenten. Verwendung: /skillset <name> <skill> <level>");
             return true;
         }
 
         String playerName = args[0];
         String skill = args[1];
         if (!skill.equals("bow") && !skill.equals("sword")) {
-            sender.sendMessage("Skill kann nur bow oder sword sein.");
+            Main.sendMessageWithPrefix(sender, "Skill kann nur bow oder sword sein.");
             return true;
         }
 
@@ -49,19 +50,18 @@ public class SkillSetCommand implements CommandExecutor, TabCompleter {
         try {
             level = Integer.parseInt(args[2]);
         } catch (NumberFormatException e) {
-            sender.sendMessage("Level muss eine Zahl sein.");
+            Main.sendMessageWithPrefix(sender, "Level muss eine Zahl sein.");
             return true;
         }
 
         if (level < 1 || level > 5) {
-            sender.sendMessage("Skill muss zwischen 1 und 5 sein.");
+            Main.sendMessageWithPrefix(sender, "Skill muss zwischen 1 und 5 sein.");
             return true;
         }
 
-        // Replace the line that retrieves the Player object with the following line
         OfflinePlayer targetPlayer = Bukkit.getOfflinePlayer(playerName);
         if (targetPlayer == null) {
-            sender.sendMessage("Spieler nicht gefunden.");
+            Main.sendMessageWithPrefix(sender, "Spieler nicht gefunden.");
             return true;
         }
 
@@ -69,9 +69,9 @@ public class SkillSetCommand implements CommandExecutor, TabCompleter {
 
         try {
             dbManager.setLevel(playerUUID.toString(), skill, level);
-            sender.sendMessage("Das Level von " + playerName + " für " + skill + " wurde auf " + level + " gesetzt.");
+            Main.sendMessageWithPrefix(sender, "Das Level von " + playerName + " für " + skill + " wurde auf " + level + " gesetzt.");
         } catch (SQLException e) {
-            sender.sendMessage("Ein Fehler ist aufgetreten beim Setzen des Skill-Levels.");
+            Main.sendMessageWithPrefix(sender, "Ein Fehler ist aufgetreten beim Setzen des Skill-Levels.");
             e.printStackTrace();
         }
 

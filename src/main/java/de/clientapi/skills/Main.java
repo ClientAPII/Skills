@@ -7,12 +7,18 @@ import de.clientapi.skills.listener.BowSkillsListener;
 import de.clientapi.skills.listener.SkillsGUIListener;
 import de.clientapi.skills.listener.SkillsListener;
 import de.clientapi.skills.listener.SwordSkillsListener;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
 
 public class Main extends JavaPlugin {
     private static Main instance;
+    public static final String PREFIX = ChatColor.GOLD + "[Skills] " + ChatColor.RESET;
+    public static void sendMessageWithPrefix(CommandSender sender, String message) {
+        sender.sendMessage(Main.PREFIX + message);
+    }
     private DatabaseManager databaseManager;
 
     @Override
