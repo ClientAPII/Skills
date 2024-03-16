@@ -1,6 +1,6 @@
 // Main.java
 package de.clientapi.skills;
-// TODO: Add the whole feature set with bows and Axes and Swords
+
 import de.clientapi.skills.commands.SkillSetCommand;
 import de.clientapi.skills.commands.SkillsCommand;
 import de.clientapi.skills.listener.BowSkillsListener;
@@ -8,6 +8,7 @@ import de.clientapi.skills.listener.SkillsGUIListener;
 import de.clientapi.skills.listener.SkillsListener;
 import de.clientapi.skills.listener.SwordSkillsListener;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import java.sql.SQLException;
 
 public class Main extends JavaPlugin {
@@ -46,7 +47,7 @@ public class Main extends JavaPlugin {
         getCommand("skillset").setTabCompleter(skillSetCommand);
 
         // Register listeners
-        getServer().getPluginManager().registerEvents(new SwordSkillsListener(), this);
+        getServer().getPluginManager().registerEvents(new SwordSkillsListener(databaseManager), this);
         getServer().getPluginManager().registerEvents(new SkillsListener(), this);
         getServer().getPluginManager().registerEvents(new BowSkillsListener(), this);
     }
