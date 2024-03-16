@@ -1,5 +1,6 @@
 name: SkillsPlugin
 main: de.clientapi.skills.Main
+api-version: 1.20
 version: 1.0
 author: ClientAPI
 description: A plugin to manage player skills and levels.
