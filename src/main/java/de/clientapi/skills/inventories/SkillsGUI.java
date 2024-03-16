@@ -4,10 +4,12 @@ import de.clientapi.skills.DatabaseManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -19,7 +21,7 @@ public class SkillsGUI {
         this.dbManager = dbManager;
     }
 
-    public Inventory createGUI(Player player) throws SQLException {
+    public Inventory createGUI(OfflinePlayer player) throws SQLException {
         Inventory inv = Bukkit.createInventory(null, 36, "Skills");
 
         int bowLevel = dbManager.getLevel(player.getUniqueId().toString(), "bow");
@@ -37,13 +39,20 @@ public class SkillsGUI {
         swordMeta.setLore(Arrays.asList("Level: " + swordLevel));
         sword.setItemMeta(swordMeta);
 
-        inv.setItem(10, bow);
-        inv.setItem(13, sword);
+        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta headMeta = (SkullMeta) head.getItemMeta();
+        headMeta.setOwningPlayer(player);
+        headMeta.setDisplayName(ChatColor.GREEN + player.getName() + "'s Skills");
+        head.setItemMeta(headMeta);
+
+        inv.setItem(4, head);
+        inv.setItem(21, bow);
+        inv.setItem(23, sword);
 
         return inv;
     }
 
-    public void openGUI(Player player) throws SQLException {
-        player.openInventory(createGUI(player));
+    public void openGUI(Player viewer, OfflinePlayer target) throws SQLException {
+        viewer.openInventory(createGUI(target));
     }
 }

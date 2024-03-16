@@ -2,12 +2,13 @@ package de.clientapi.skills.commands;
 
 import de.clientapi.skills.DatabaseManager;
 import de.clientapi.skills.inventories.SkillsGUI;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.awt.*;
 import java.sql.SQLException;
 
 public class SkillsCommand implements CommandExecutor {
@@ -24,11 +25,19 @@ public class SkillsCommand implements CommandExecutor {
             return true;
         }
 
-        Player player = (Player) sender;
+        Player viewer = (Player) sender;
+        OfflinePlayer target;
+
+        if (viewer.hasPermission("skills.admin") && args.length > 0) {
+            target = Bukkit.getOfflinePlayer(args[0]);
+        } else {
+            target = viewer;
+        }
+
         try {
-            skillsGUI.openGUI(player);
+            skillsGUI.openGUI(viewer, target);
         } catch (SQLException e) {
-            player.sendMessage("An error occurred while opening the skills GUI.");
+            viewer.sendMessage("An error occurred while opening the skills GUI.");
             e.printStackTrace();
         }
 
