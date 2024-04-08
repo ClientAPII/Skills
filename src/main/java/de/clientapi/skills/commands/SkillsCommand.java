@@ -15,7 +15,7 @@ public class SkillsCommand implements CommandExecutor {
     private final SkillsGUI skillsGUI;
 
     public SkillsCommand(DatabaseManager dbManager) {
-        this.skillsGUI = new SkillsGUI(dbManager);
+        this.skillsGUI = new SkillsGUI();
     }
 
     @Override

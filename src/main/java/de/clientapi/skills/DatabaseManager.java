@@ -19,13 +19,15 @@ public class DatabaseManager {
         return false;
     }
 
-    public void createPlayer(String uuid, String name, int bow, int sword) throws SQLException {
-        String query = "INSERT INTO skills (uuid, name, bow, sword) VALUES (?, ?, ?, ?)";
+    public void createPlayer(String uuid, String name, int bow, int sword, int crossbow, int axe) throws SQLException {
+        String query = "INSERT INTO skills (uuid, name, bow, sword, crossbow, axe) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, uuid);
             statement.setString(2, name);
             statement.setInt(3, bow);
             statement.setInt(4, sword);
+            statement.setInt(5, crossbow);
+            statement.setInt(6, axe);
             statement.executeUpdate();
         }
     }
@@ -81,6 +83,26 @@ public class DatabaseManager {
             statement.setInt(1, level);
             statement.setString(2, uuid);
             statement.executeUpdate();
+        }
+    }
+    public void addMissingSkills(String uuid) throws SQLException {
+        DatabaseMetaData dbm = connection.getMetaData();
+        ResultSet tables = dbm.getTables(null, null, "skills", null);
+        if (tables.next()) {
+            ResultSet rs = dbm.getColumns(null, null, "skills", "crossbow");
+            if (!rs.next()) {
+                String query = "ALTER TABLE skills ADD crossbow INT DEFAULT 1";
+                try (PreparedStatement statement = connection.prepareStatement(query)) {
+                    statement.executeUpdate();
+                }
+            }
+            rs = dbm.getColumns(null, null, "skills", "axe");
+            if (!rs.next()) {
+                String query = "ALTER TABLE skills ADD axe INT DEFAULT 1";
+                try (PreparedStatement statement = connection.prepareStatement(query)) {
+                    statement.executeUpdate();
+                }
+            }
         }
     }
 }

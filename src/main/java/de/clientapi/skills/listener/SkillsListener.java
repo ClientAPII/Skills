@@ -8,7 +8,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.sql.SQLException;
 
-
 public class SkillsListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -18,9 +17,10 @@ public class SkillsListener implements Listener {
 
         try {
             if (!dbManager.doesPlayerExist(uuid)) {
-                dbManager.createPlayer(uuid, name, 1, 1);
+                dbManager.createPlayer(uuid, name, 1, 1, 1, 1); // Default levels for bow, sword, crossbow, and axe
             } else {
                 dbManager.updatePlayerName(uuid, name);
+                dbManager.addMissingSkills(uuid); // Ensure all skills are present in the player's database entry
             }
         } catch (SQLException e) {
             e.printStackTrace();

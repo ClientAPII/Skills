@@ -1,6 +1,7 @@
 package de.clientapi.skills.inventories;
 
 import de.clientapi.skills.DatabaseManager;
+import de.clientapi.skills.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -15,41 +16,59 @@ import java.sql.SQLException;
 import java.util.Arrays;
 
 public class SkillsGUI {
-    private final DatabaseManager dbManager;
+    public Inventory createGUI(OfflinePlayer player) {
+        Inventory inv = Bukkit.createInventory(null, 27, ChatColor.AQUA + "Skills");
+        String uuid = player.getUniqueId().toString();
+        DatabaseManager dbManager = Main.getInstance().getDatabaseManager();
 
-    public SkillsGUI(DatabaseManager dbManager) {
-        this.dbManager = dbManager;
-    }
+        try {
+            dbManager.addMissingSkills(uuid); // Ensure all skills are present in the player's database entry
 
-    public Inventory createGUI(OfflinePlayer player) throws SQLException {
-        Inventory inv = Bukkit.createInventory(null, 36, "Skills");
+            int bowLevel = dbManager.getLevel(uuid, "bow");
+            int swordLevel = dbManager.getLevel(uuid, "sword");
+            int crossbowLevel = dbManager.getLevel(uuid, "crossbow");
+            int axeLevel = dbManager.getLevel(uuid, "axe");
 
-        int bowLevel = dbManager.getLevel(player.getUniqueId().toString(), "bow");
-        int swordLevel = dbManager.getLevel(player.getUniqueId().toString(), "sword");
+            ItemStack bow = new ItemStack(Material.BOW);
+            ItemMeta bowMeta = bow.getItemMeta();
+            bowMeta.setDisplayName(ChatColor.YELLOW + "Bogen Skill");
+            bowMeta.setLore(Arrays.asList("Level: " + bowLevel));
+            bow.setItemMeta(bowMeta);
 
-        ItemStack bow = new ItemStack(Material.BOW);
-        ItemMeta bowMeta = bow.getItemMeta();
-        bowMeta.setDisplayName(ChatColor.YELLOW + "Bogen Skill");
-        bowMeta.setLore(Arrays.asList("Level: " + bowLevel));
-        bow.setItemMeta(bowMeta);
+            ItemStack sword = new ItemStack(Material.IRON_SWORD);
+            ItemMeta swordMeta = sword.getItemMeta();
+            swordMeta.setDisplayName(ChatColor.RED + "Schwert Skill");
+            swordMeta.setLore(Arrays.asList("Level: " + swordLevel));
+            sword.setItemMeta(swordMeta);
 
-        ItemStack sword = new ItemStack(Material.IRON_SWORD);
-        ItemMeta swordMeta = sword.getItemMeta();
-        swordMeta.setDisplayName(ChatColor.RED + "Schwert Skill");
-        swordMeta.setLore(Arrays.asList("Level: " + swordLevel));
-        sword.setItemMeta(swordMeta);
+            ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+            SkullMeta headMeta = (SkullMeta) head.getItemMeta();
+            headMeta.setOwningPlayer(player);
+            headMeta.setDisplayName(ChatColor.GREEN + player.getName() + "'s Skills");
+            head.setItemMeta(headMeta);
 
-        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
-        SkullMeta headMeta = (SkullMeta) head.getItemMeta();
-        headMeta.setOwningPlayer(player);
-        headMeta.setDisplayName(ChatColor.GREEN + player.getName() + "'s Skills");
-        head.setItemMeta(headMeta);
+            ItemStack crossbow = new ItemStack(Material.CROSSBOW);
+            ItemMeta crossbowMeta = crossbow.getItemMeta();
+            crossbowMeta.setDisplayName(ChatColor.YELLOW + "Armbrust Skill");
+            crossbowMeta.setLore(Arrays.asList("Level: " + crossbowLevel));
+            crossbow.setItemMeta(crossbowMeta);
 
-        inv.setItem(4, head);
-        inv.setItem(21, bow);
-        inv.setItem(23, sword);
+            ItemStack axe = new ItemStack(Material.IRON_AXE);
+            ItemMeta axeMeta = axe.getItemMeta();
+            axeMeta.setDisplayName(ChatColor.RED + "Axt Skill");
+            axeMeta.setLore(Arrays.asList("Level: " + axeLevel));
+            axe.setItemMeta(axeMeta);
 
-        return inv;
+            inv.setItem(4, head);
+            inv.setItem(21, bow);
+            inv.setItem(23, sword);
+            inv.setItem(20, crossbow);
+            inv.setItem(24, axe);
+
+            return inv;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void openGUI(Player viewer, OfflinePlayer target) throws SQLException {

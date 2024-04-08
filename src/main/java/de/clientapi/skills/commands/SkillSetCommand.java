@@ -41,7 +41,7 @@ public class SkillSetCommand implements CommandExecutor, TabCompleter {
 
         String playerName = args[0];
         String skill = args[1];
-        if (!skill.equals("bow") && !skill.equals("sword")) {
+        if (!skill.equals("bow") && !skill.equals("sword") && !skill.equals("crossbow") && !skill.equals("axe"))  {
             Main.sendMessageWithPrefix(sender, "Skill kann nur bow oder sword sein.");
             return true;
         }
@@ -88,7 +88,7 @@ public class SkillSetCommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length == 2) {
-            return Arrays.asList("bow", "sword");
+            return Arrays.asList("bow", "Sword","axe","crossbow");
         } else if (args.length == 3) {
             return Arrays.asList("1", "2", "3", "4", "5");
         }
