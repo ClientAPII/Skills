@@ -1,7 +1,7 @@
 name: SkillsPlugin
 main: de.clientapi.skills.Main
 api-version: 1.20
-version: 1.0
+version: 0.7
 author: ClientAPI
 description: A plugin to manage player skills and levels.
 commands:
@@ -9,3 +9,5 @@ commands:
     description: Opens the Skills GUI.
   skillset:
     description: Setzt den Skill-Level eines Spielers.
+  lanze:
+    description: Gibt dir eine Lanze.

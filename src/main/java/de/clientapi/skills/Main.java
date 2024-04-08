@@ -1,12 +1,10 @@
 // Main.java
 package de.clientapi.skills;
 
+import de.clientapi.skills.commands.GiveLanzeCommand;
 import de.clientapi.skills.commands.SkillSetCommand;
 import de.clientapi.skills.commands.SkillsCommand;
-import de.clientapi.skills.listener.BowSkillsListener;
-import de.clientapi.skills.listener.SkillsGUIListener;
-import de.clientapi.skills.listener.SkillsListener;
-import de.clientapi.skills.listener.SwordSkillsListener;
+import de.clientapi.skills.listener.*;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -46,6 +44,7 @@ public class Main extends JavaPlugin {
         }
 
         // Register commands
+        this.getCommand("lanze").setExecutor(new GiveLanzeCommand());
         getCommand("skills").setExecutor(new SkillsCommand(databaseManager));
         getServer().getPluginManager().registerEvents(new SkillsGUIListener(), this);
         SkillSetCommand skillSetCommand = new SkillSetCommand(databaseManager);
@@ -56,6 +55,8 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new SwordSkillsListener(databaseManager), this);
         getServer().getPluginManager().registerEvents(new SkillsListener(), this);
         getServer().getPluginManager().registerEvents(new BowSkillsListener(), this);
+        getServer().getPluginManager().registerEvents(new LanzenListener(), this);
+        getServer().getPluginManager().registerEvents(new ArmorListener(), this);
     }
 
     public static Main getInstance() {
