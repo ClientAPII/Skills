@@ -16,16 +16,17 @@ import org.bukkit.util.Vector;
 import java.sql.SQLException;
 import java.util.Random;
 
-public class BowSkillsListener implements Listener {
+public class CrossbowSkillListener implements Listener {
     private final Random random = new Random();
 
     @EventHandler
-    public void onShootBow(EntityShootBowEvent event) {
+    public void onShootCrossbow(EntityShootBowEvent event) {
         if (!(event.getEntity() instanceof Player)) {
             return;
         }
 
-        if (event.getBow().getType() == Material.CROSSBOW) {
+        // Überprüfen, ob das verwendete Material eine Armbrust ist
+        if (event.getBow().getType() != Material.CROSSBOW) {
             return;
         }
 
@@ -33,11 +34,13 @@ public class BowSkillsListener implements Listener {
         DatabaseManager dbManager = Main.getInstance().getDatabaseManager();
         int level;
         try {
-            level = dbManager.getLevel(player.getUniqueId().toString(), "bow");
+            level = dbManager.getLevel(player.getUniqueId().toString(), "crossbow");
+            System.out.println("Crossbow skill level: " + level); // Debug-Ausgabe
         } catch (SQLException e) {
             e.printStackTrace();
             return;
         }
+
 
         double noShootChance;
         double deviationFactor;
@@ -93,6 +96,5 @@ public class BowSkillsListener implements Listener {
             // Add the deviation to the arrow's velocity
             event.getProjectile().setVelocity(event.getProjectile().getVelocity().add(deviation));
         }
-
     }
 }
