@@ -40,8 +40,18 @@
       <id>sonatype</id>
       <url>https://oss.sonatype.org/content/groups/public/</url>
     </repository>
+    <repository>
+      <id>local-repo</id>
+      <url>file:///C:\Users\Simon\.m2\repository</url>
+    </repository>
   </repositories>
   <dependencies>
+    <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot</artifactId>
+      <version>1.20.2-R0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>

@@ -1,0 +1,33 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="MavenDuplicateDependenciesInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="VulnerableLibrariesLocal" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="isIgnoringEnabled" value="true" />
+      <option name="ignoredModules">
+        <list>
+          <option value="Skills" />
+          <option value="Skills" />
+          <option value="Skills" />
+          <option value="Skills" />
+        </list>
+      </option>
+      <option name="ignoredPackages">
+        <list>
+          <option value="com.mysql:mysql-connector-j:8.1.0" />
+          <option value="commons-codec:commons-codec:1.11" />
+          <option value="com.google.protobuf:protobuf-java:3.11.4" />
+          <option value="mysql:mysql-connector-java:8.0.26" />
+        </list>
+      </option>
+      <option name="ignoredReasons">
+        <list>
+          <option value="Not exploitable" />
+          <option value="Fixed in branch" />
+          <option value="Not exploitable" />
+          <option value="Not exploitable" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

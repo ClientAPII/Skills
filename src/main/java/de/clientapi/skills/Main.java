@@ -58,6 +58,7 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new LanzenListener(), this);
         getServer().getPluginManager().registerEvents(new ArmorListener(), this);
         getServer().getPluginManager().registerEvents(new CrossbowSkillListener(), this);
+        getServer().getPluginManager().registerEvents(new AxeSkillListener(databaseManager, this), this);
     }
 
     public static Main getInstance() {

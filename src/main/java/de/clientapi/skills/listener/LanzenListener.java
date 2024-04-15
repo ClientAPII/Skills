@@ -18,10 +18,10 @@ public class LanzenListener implements Listener {
 
     @EventHandler
     public void onPlayerHitByLance(EntityDamageByEntityEvent event) {
-        System.out.println("EntityDamageByEntityEvent triggered"); // Debug message
+        //System.out.println("EntityDamageByEntityEvent triggered"); // Debug message
 
         if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
-            System.out.println("Both entities are players"); // Debug message
+            //System.out.println("Both entities are players"); // Debug message
 
             Player damaged = (Player) event.getEntity();
             Player damager = (Player) event.getDamager();
@@ -32,11 +32,11 @@ public class LanzenListener implements Listener {
                 if (meta != null && meta.hasLore()) {
                     List<String> lore = meta.getLore();
                     if (lore.contains(ChatColor.DARK_GRAY + "Lanze")) {
-                        System.out.println("Damager is holding a lance"); // Debug message
+                        //System.out.println("Damager is holding a lance"); // Debug message
 
                         // Überprüfen, ob der beschädigte Spieler auf einem Pferd sitzt
                         if (damaged.getVehicle() instanceof Horse) {
-                            System.out.println("Damaged player is on a horse"); // Debug message
+                            //System.out.println("Damaged player is on a horse"); // Debug message
 
                             Horse horse = (Horse) damaged.getVehicle();
 
@@ -51,14 +51,14 @@ public class LanzenListener implements Listener {
                             // Slowness für 7 Sekunden hinzufügen
                             damaged.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 7 * 20, 2));
                         } else {
-                            System.out.println("Damaged player is not on a horse"); // Debug message
+                            //System.out.println("Damaged player is not on a horse"); // Debug message
                         }
                     } else {
-                        System.out.println("Damager is not holding a lance"); // Debug message
+                        //System.out.println("Damager is not holding a lance"); // Debug message
                     }
                 }
             } else {
-                System.out.println("One or both entities are not players"); // Debug message
+                //System.out.println("One or both entities are not players"); // Debug message
             }
         }
     }

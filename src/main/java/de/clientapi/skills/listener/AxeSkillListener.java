@@ -1,17 +1,33 @@
 package de.clientapi.skills.listener;
 
 import de.clientapi.skills.DatabaseManager;
-import de.clientapi.skills.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+
 
 import java.sql.SQLException;
+import java.util.Random;
+
+
+//TODO: Hit abfangen bevor der Schaden angewendet wird
 
 public class AxeSkillListener implements Listener {
+    private final Random random = new Random();
+    private final DatabaseManager dbManager;
+    private final Plugin plugin;
+
+
+    public AxeSkillListener(DatabaseManager dbManager, Plugin plugin) {
+        this.dbManager = dbManager;
+        this.plugin = plugin;
+    }
+
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player)) {
@@ -19,61 +35,98 @@ public class AxeSkillListener implements Listener {
         }
 
         Player player = (Player) event.getDamager();
-        ItemStack itemInHand = player.getInventory().getItemInMainHand();
+        ItemStack item = player.getInventory().getItemInMainHand();
 
-        if (itemInHand.getType() != Material.IRON_AXE) {
+        if (item.getType() != Material.IRON_AXE && item.getType() != Material.DIAMOND_AXE &&
+                item.getType() != Material.GOLDEN_AXE && item.getType() != Material.STONE_AXE &&
+                item.getType() != Material.WOODEN_AXE && item.getType() != Material.NETHERITE_AXE) {
             return;
         }
 
-        String uuid = player.getUniqueId().toString();
-        DatabaseManager dbManager = Main.getInstance().getDatabaseManager();
-
         try {
-            int currentLevel = dbManager.getLevel(uuid, "axe");
-            applyDamageModifiers(currentLevel, event);
+            applyDamageModifiers(player, event);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    //TODO Implement the different shield cooldowns
-
-    private void applyDamageModifiers(int level, EntityDamageByEntityEvent event) {
-        double damageMultiplier;
-        boolean canBreakShield;
+    private void applyDamageModifiers(Player player, EntityDamageByEntityEvent event) throws SQLException {
+        int level = dbManager.getLevel(player.getUniqueId().toString(), "axe");
+        double noDamageChance;
+        double reducedDamageChance;
+        double reducedDamageMultiplier;
+        int cooldownTicks;
 
         switch (level) {
             case 1:
-                damageMultiplier = 0.2;
-                canBreakShield = false;
+                noDamageChance = 0;
+                reducedDamageChance = 0.8;
+                reducedDamageMultiplier = 0.5;
+                cooldownTicks = 2;
                 break;
             case 2:
+                noDamageChance = 0;
+                reducedDamageChance = 0.5;
+                reducedDamageMultiplier = 0.7;
+                cooldownTicks = 4;
+                break;
             case 3:
-                damageMultiplier = 0.4;
-                canBreakShield = false;
+                noDamageChance = 0;
+                reducedDamageChance = 0.3;
+                reducedDamageMultiplier = 0.85;
+                cooldownTicks = 8;
                 break;
             case 4:
-                damageMultiplier = 1;
-                canBreakShield = true;
+                noDamageChance = 0;
+                reducedDamageChance = 0;
+                reducedDamageMultiplier = 1;
+                cooldownTicks = 16;
                 break;
             case 5:
-                damageMultiplier = 1.1;
-                canBreakShield = true;
+                noDamageChance = 0;
+                reducedDamageChance = -0.1; // Negative value indicates increased damage
+                reducedDamageMultiplier = 1.1;
+                cooldownTicks = 25;
                 break;
             default:
                 return;
         }
 
-        event.setDamage(event.getDamage() * damageMultiplier);
+        double rand = random.nextDouble();
 
-        if (!canBreakShield && event.getEntity() instanceof Player) {
+        if (rand < noDamageChance) {
+            event.setDamage(0);
+        } else if (rand < noDamageChance + Math.abs(reducedDamageChance)) {
+            event.setDamage(event.getDamage() * reducedDamageMultiplier);
+        }
+
+        // Check if the damaged entity is a player and is blocking with a shield
+        if (event.getEntity() instanceof Player) {
             Player damagedPlayer = (Player) event.getEntity();
+            ItemStack mainHandItem = damagedPlayer.getInventory().getItemInMainHand();
             ItemStack offhandItem = damagedPlayer.getInventory().getItemInOffHand();
-            if (offhandItem.getType() == Material.SHIELD && event.getDamager() instanceof Player) {
-                Player damager = (Player) event.getDamager();
-                if (damager.getInventory().getItemInMainHand().getType() == Material.IRON_AXE) {
-                    event.setCancelled(true);
+            if ((mainHandItem.getType() == Material.SHIELD || offhandItem.getType() == Material.SHIELD) && damagedPlayer.isBlocking()) {
+                // Angriff stornieren, indem der Schaden auf 0 gesetzt wird
+                event.setDamage(0);
+                // Schild entfernen
+                if (mainHandItem.getType() == Material.SHIELD) {
+                    damagedPlayer.getInventory().setItemInMainHand(null);
+                } else {
+                    damagedPlayer.getInventory().setItemInOffHand(null);
                 }
+                // Schild nach einer kurzen Verzögerung wieder hinzufügen
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    if (mainHandItem.getType() == Material.SHIELD) {
+                        damagedPlayer.getInventory().setItemInMainHand(mainHandItem);
+                    } else {
+                        damagedPlayer.getInventory().setItemInOffHand(offhandItem);
+                    }
+                    // Cooldown des Schildes basierend auf dem Level des angreifenden Spielers setzen
+                    damagedPlayer.setCooldown(Material.SHIELD, cooldownTicks * 20);
+                }, 2L); // 20 Ticks Verzögerung, entspricht 1 Sekunde
+
+                // Cooldown des Schildes basierend auf dem Level des angreifenden Spielers setzen
+                damagedPlayer.setCooldown(Material.SHIELD, cooldownTicks * 20);
             }
         }
     }
