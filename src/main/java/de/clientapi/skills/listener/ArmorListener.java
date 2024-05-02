@@ -15,9 +15,9 @@ public class ArmorListener implements Listener {
         ItemStack[] armor = player.getInventory().getArmorContents();
 
         if (isWearingFullArmorOfType(armor, Material.IRON_HELMET, Material.IRON_CHESTPLATE, Material.IRON_LEGGINGS, Material.IRON_BOOTS)) {
-            player.setWalkSpeed(0.16f);
+            player.setWalkSpeed(0.2f); //0.18f
         } else if (isWearingFullArmorOfType(armor, Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS)) {
-            player.setWalkSpeed(0.24f);
+            player.setWalkSpeed(0.2f);
         } else {
             player.setWalkSpeed(0.2f); // Normal speed
         }

@@ -52,7 +52,7 @@ public class CrossbowSkillListener implements Listener {
                 break;
             case 2:
                 noShootChance = 0.05;
-                deviationFactor = 0.5; // Medium deviation
+                deviationFactor = 0.7; // Medium deviation
                 break;
             case 3:
                 noShootChance = 0.01;
@@ -73,6 +73,7 @@ public class CrossbowSkillListener implements Listener {
 
             // Reduce the player's health by half a heart
             player.setHealth(Math.max(0, player.getHealth() - 1));
+            player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_PLAYER_HURT, 1.0f, 1.0f);
 
             // Generate a random number to determine which message to display
             double rand = random.nextDouble();

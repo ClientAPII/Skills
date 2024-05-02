@@ -24,55 +24,50 @@ public class SkillSetCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            Main.sendMessageWithPrefix(sender, "Dieser Befehl kann nur von einem Spieler verwendet werden.");
-            return true;
-        }
+        if (command.getName().equalsIgnoreCase("skillset")) {
+            if (args.length != 3) {
+                Main.sendMessageWithPrefix(sender, "Falsche Anzahl von Argumenten. Verwendung: /skillset <name> <skill> <level>");
+                return true;
+            }
 
-        if (!sender.hasPermission("skills.admin.set")) {
-            Main.sendMessageWithPrefix(sender, "Dazu hast du keine Rechte");
-            return true;
-        }
+            String playerName = args[0];
+            String skillName = args[1].toLowerCase(); // Convert to lowercase
 
-        if (args.length != 3) {
-            Main.sendMessageWithPrefix(sender, "Falsche Anzahl von Argumenten. Verwendung: /skillset <name> <skill> <level>");
-            return true;
-        }
+            if (!skillName.equals("bow") && !skillName.equals("sword") && !skillName.equals("crossbow") && !skillName.equals("axe"))  {
+                Main.sendMessageWithPrefix(sender, "Skill kann nur bow, sword, crossbow oder axe sein.");
+                return true;
+            }
 
-        String playerName = args[0];
-        String skill = args[1];
-        if (!skill.equals("bow") && !skill.equals("sword") && !skill.equals("crossbow") && !skill.equals("axe"))  {
-            Main.sendMessageWithPrefix(sender, "Skill kann nur bow oder sword sein.");
-            return true;
-        }
+            int level;
+            try {
+                level = Integer.parseInt(args[2]);
+            } catch (NumberFormatException e) {
+                Main.sendMessageWithPrefix(sender, "Level muss eine Zahl sein.");
+                return true;
+            }
 
-        int level;
-        try {
-            level = Integer.parseInt(args[2]);
-        } catch (NumberFormatException e) {
-            Main.sendMessageWithPrefix(sender, "Level muss eine Zahl sein.");
-            return true;
-        }
+            if (level < 1 || level > 5) {
+                Main.sendMessageWithPrefix(sender, "Skill muss zwischen 1 und 5 sein.");
+                return true;
+            }
 
-        if (level < 1 || level > 5) {
-            Main.sendMessageWithPrefix(sender, "Skill muss zwischen 1 und 5 sein.");
-            return true;
-        }
+            OfflinePlayer targetPlayer = Bukkit.getOfflinePlayer(playerName);
+            if (targetPlayer == null) {
+                Main.sendMessageWithPrefix(sender, "Spieler nicht gefunden.");
+                return true;
+            }
 
-        OfflinePlayer targetPlayer = Bukkit.getOfflinePlayer(playerName);
-        if (targetPlayer == null) {
-            Main.sendMessageWithPrefix(sender, "Spieler nicht gefunden.");
-            return true;
-        }
+            UUID playerUUID = targetPlayer.getUniqueId();
 
-        UUID playerUUID = targetPlayer.getUniqueId();
+            try {
+                dbManager.setLevel(playerUUID.toString(), skillName, level);
+                Main.sendMessageWithPrefix(sender, "Das Level von " + playerName + " für " + skillName + " wurde auf " + level + " gesetzt.");
+            } catch (SQLException e) {
+                Main.sendMessageWithPrefix(sender, "Ein Fehler ist aufgetreten beim Setzen des Skill-Levels.");
+                e.printStackTrace();
+            }
 
-        try {
-            dbManager.setLevel(playerUUID.toString(), skill, level);
-            Main.sendMessageWithPrefix(sender, "Das Level von " + playerName + " für " + skill + " wurde auf " + level + " gesetzt.");
-        } catch (SQLException e) {
-            Main.sendMessageWithPrefix(sender, "Ein Fehler ist aufgetreten beim Setzen des Skill-Levels.");
-            e.printStackTrace();
+            return false;
         }
 
         return false;
@@ -88,7 +83,7 @@ public class SkillSetCommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length == 2) {
-            return Arrays.asList("bow", "Sword","axe","crossbow");
+            return Arrays.asList("Bow", "Sword","Axe","Crossbow");
         } else if (args.length == 3) {
             return Arrays.asList("1", "2", "3", "4", "5");
         }

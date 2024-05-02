@@ -10,18 +10,13 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-
 import java.sql.SQLException;
 import java.util.Random;
-
-
-//TODO: Hit abfangen bevor der Schaden angewendet wird
 
 public class AxeSkillListener implements Listener {
     private final Random random = new Random();
     private final DatabaseManager dbManager;
     private final Plugin plugin;
-
 
     public AxeSkillListener(DatabaseManager dbManager, Plugin plugin) {
         this.dbManager = dbManager;
@@ -62,31 +57,31 @@ public class AxeSkillListener implements Listener {
                 noDamageChance = 0;
                 reducedDamageChance = 0.8;
                 reducedDamageMultiplier = 0.5;
-                cooldownTicks = 2;
+                cooldownTicks = 1;
                 break;
             case 2:
                 noDamageChance = 0;
                 reducedDamageChance = 0.5;
                 reducedDamageMultiplier = 0.7;
-                cooldownTicks = 4;
+                cooldownTicks = 2;
                 break;
             case 3:
                 noDamageChance = 0;
                 reducedDamageChance = 0.3;
                 reducedDamageMultiplier = 0.85;
-                cooldownTicks = 8;
+                cooldownTicks = 3;
                 break;
             case 4:
                 noDamageChance = 0;
                 reducedDamageChance = 0;
                 reducedDamageMultiplier = 1;
-                cooldownTicks = 16;
+                cooldownTicks = 4;
                 break;
             case 5:
                 noDamageChance = 0;
                 reducedDamageChance = -0.1; // Negative value indicates increased damage
                 reducedDamageMultiplier = 1.1;
-                cooldownTicks = 25;
+                cooldownTicks = 5;
                 break;
             default:
                 return;
@@ -99,14 +94,19 @@ public class AxeSkillListener implements Listener {
         } else if (rand < noDamageChance + Math.abs(reducedDamageChance)) {
             event.setDamage(event.getDamage() * reducedDamageMultiplier);
         }
+        ItemStack offhandItem = player.getInventory().getItemInOffHand();
+        if (offhandItem.getType() == Material.SHIELD) {
+            // If they do, apply a 40% damage reduction
+            event.setDamage(event.getDamage() * 0.6);
+        }
 
         // Check if the damaged entity is a player and is blocking with a shield
         if (event.getEntity() instanceof Player) {
             Player damagedPlayer = (Player) event.getEntity();
             ItemStack mainHandItem = damagedPlayer.getInventory().getItemInMainHand();
-            ItemStack offhandItem = damagedPlayer.getInventory().getItemInOffHand();
-            if ((mainHandItem.getType() == Material.SHIELD || offhandItem.getType() == Material.SHIELD) && damagedPlayer.isBlocking()) {
-                // Angriff stornieren, indem der Schaden auf 0 gesetzt wird
+            ItemStack damagedOffhandItem = damagedPlayer.getInventory().getItemInOffHand();
+            if ((mainHandItem.getType() == Material.SHIELD || damagedOffhandItem.getType() == Material.SHIELD) && damagedPlayer.isBlocking()) {
+                // Damage auf 0 setzen, Schild wird nicht nach unten geschlagen
                 event.setDamage(0);
                 // Schild entfernen
                 if (mainHandItem.getType() == Material.SHIELD) {
@@ -119,7 +119,7 @@ public class AxeSkillListener implements Listener {
                     if (mainHandItem.getType() == Material.SHIELD) {
                         damagedPlayer.getInventory().setItemInMainHand(mainHandItem);
                     } else {
-                        damagedPlayer.getInventory().setItemInOffHand(offhandItem);
+                        damagedPlayer.getInventory().setItemInOffHand(damagedOffhandItem);
                     }
                     // Cooldown des Schildes basierend auf dem Level des angreifenden Spielers setzen
                     damagedPlayer.setCooldown(Material.SHIELD, cooldownTicks * 20);

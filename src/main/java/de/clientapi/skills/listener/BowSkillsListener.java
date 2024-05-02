@@ -8,7 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.util.Vector;
@@ -70,6 +69,7 @@ public class BowSkillsListener implements Listener {
 
             // Reduce the player's health by half a heart
             player.setHealth(Math.max(0, player.getHealth() - 1));
+            player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_PLAYER_HURT, 1.0f, 1.0f);
 
             // Generate a random number to determine which message to display
             double rand = random.nextDouble();
@@ -93,6 +93,5 @@ public class BowSkillsListener implements Listener {
             // Add the deviation to the arrow's velocity
             event.getProjectile().setVelocity(event.getProjectile().getVelocity().add(deviation));
         }
-
     }
 }

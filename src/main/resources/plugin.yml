@@ -11,3 +11,5 @@ commands:
     description: Setzt den Skill-Level eines Spielers.
   lanze:
     description: Gibt dir eine Lanze.
+  hit:
+    description: Simuliert einen Lanzenangriff.

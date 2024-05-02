@@ -8,10 +8,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.sql.SQLException;
 
-public class SkillsCommand implements CommandExecutor {
+public class SkillsCommand implements CommandExecutor, Listener {
     private final SkillsGUI skillsGUI;
 
     public SkillsCommand(DatabaseManager dbManager) {
@@ -42,5 +45,11 @@ public class SkillsCommand implements CommandExecutor {
         }
 
         return true;
+    }
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (event.getInventory().getHolder() instanceof SkillsGUI) {
+            event.setCancelled(true);
+        }
     }
 }

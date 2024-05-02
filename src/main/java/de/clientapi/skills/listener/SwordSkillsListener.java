@@ -89,7 +89,7 @@ public class SwordSkillsListener implements Listener {
         ItemStack offhandItem = player.getInventory().getItemInOffHand();
         if (offhandItem.getType() == Material.SHIELD) {
             // If they do, apply a 40% damage reduction
-            event.setDamage(event.getDamage() * 0.6);
+            event.setDamage(event.getDamage() * 0.8);
         }
     }
 }

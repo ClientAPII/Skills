@@ -7,6 +7,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -15,9 +19,9 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-public class SkillsGUI {
+public class SkillsGUI implements Listener {
     public Inventory createGUI(OfflinePlayer player) {
-        Inventory inv = Bukkit.createInventory(null, 27, ChatColor.AQUA + "Skills");
+        Inventory inv = Bukkit.createInventory(new SkillsInventoryHolder(), 27, ChatColor.AQUA + "Skills");
         String uuid = player.getUniqueId().toString();
         DatabaseManager dbManager = Main.getInstance().getDatabaseManager();
 
@@ -68,6 +72,13 @@ public class SkillsGUI {
             return inv;
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (event.getInventory().getHolder() instanceof SkillsInventoryHolder) {
+            event.setCancelled(true);
         }
     }
 
